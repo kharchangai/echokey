@@ -174,7 +174,7 @@ xcode-select --install
 Clone and run:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/echokey.git
+git clone https://github.com/kharchangai/echokey.git
 cd echokey
 npm install
 npm run tauri dev
@@ -249,7 +249,7 @@ sudo apt install -y \
 Then clone and run:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/echokey.git
+git clone https://github.com/kharchangai/echokey.git
 cd echokey
 npm install
 npm run tauri dev
