@@ -1,0 +1,127 @@
+/* Hide scrollbar while keeping scrolling enabled */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Shared input field styles */
+.input-field {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.06);
+  padding: 1rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+  font-size: 0.875rem;
+  color: white;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.input-field::placeholder {
+  color: rgb(63 63 70);
+}
+
+.input-field:focus {
+  border-color: rgb(96 165 250 / 0.5);
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.1);
+}
+
+/* Shared select field styles */
+.select-field {
+  width: 100%;
+  appearance: none;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.06);
+  padding: 0.875rem 2.5rem 0.875rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.select-field:focus {
+  border-color: rgb(96 165 250 / 0.5);
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.1);
+}
+
+/* Shortcut capture button */
+.shortcut-capture-field {
+  width: 100%;
+  min-height: 3.35rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.06);
+  padding: 0.75rem 1rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+  font-size: 0.875rem;
+  color: white;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.shortcut-capture-field:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.shortcut-capture-field:active {
+  transform: scale(0.99);
+}
+
+.shortcut-capture-field:focus,
+.shortcut-capture-field-active {
+  border-color: rgb(96 165 250 / 0.55);
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.12);
+  background: rgb(59 130 246 / 0.08);
+}
+
+.shortcut-key {
+  display: inline-flex;
+  min-height: 1.55rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.08);
+  padding: 0.15rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgb(228 228 231);
+  box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.05);
+}

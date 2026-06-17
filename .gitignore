@@ -1,0 +1,41 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Frontend Build & Dependencies
+node_modules
+dist
+dist-ssr
+*.local
+
+# === RUST & TAURI (بسیار حیاتی) ===
+# این پوشه حجم بسیار بالایی دارد و نباید آپلود شود
+src-tauri/target/
+
+# === SECURITY & API KEYS (امنیتی) ===
+# برای جلوگیری از لو رفتن کلیدهای API در گیت‌هاب
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System Files (Windows/Mac)
+Thumbs.db
+desktop.ini

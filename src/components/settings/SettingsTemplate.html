@@ -1,0 +1,597 @@
+<div class="relative h-screen w-screen overflow-hidden bg-[#09090b] text-white">
+  <!-- Background glow -->
+  <div class="pointer-events-none fixed inset-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl"></div>
+    <div class="absolute -bottom-32 right-[-6rem] h-[26rem] w-[26rem] rounded-full bg-violet-600/15 blur-3xl"></div>
+    <div class="absolute bottom-20 left-[-8rem] h-[24rem] w-[24rem] rounded-full bg-cyan-500/10 blur-3xl"></div>
+  </div>
+
+  <!-- App shell -->
+  <main class="relative flex h-full w-full items-center justify-center p-6">
+    <section class="flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/40 backdrop-blur-2xl">
+      <!-- Header -->
+      <div class="flex shrink-0 items-center justify-between border-b border-white/10 px-7 py-5">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-blue-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6.75 6.75 0 0 0 6.75-6.75V9A6.75 6.75 0 0 0 5.25 9v3A6.75 6.75 0 0 0 12 18.75Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 12V9a3.75 3.75 0 0 1 7.5 0v3" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75V21" />
+            </svg>
+          </div>
+
+          <div>
+            <h1 class="text-lg font-semibold tracking-tight text-white">
+              EchoKey Settings
+            </h1>
+            <p class="mt-0.5 text-xs text-zinc-500">
+              Configure your OpenAI-compatible gateway
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div
+            class="hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium sm:flex"
+            :class="isConfigured ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300' : 'border-amber-400/20 bg-amber-400/10 text-amber-300'"
+          >
+            <span
+              class="h-1.5 w-1.5 rounded-full"
+              :class="isConfigured ? 'bg-emerald-300' : 'bg-amber-300'"
+            ></span>
+
+            {{ isConfigured ? "Ready" : "Setup required" }}
+          </div>
+
+          <!-- Close window button -->
+          <button
+            type="button"
+            @click="closeWindow"
+            class="group flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-500 transition hover:border-red-400/20 hover:bg-red-500/10 hover:text-red-300"
+            title="Close window"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition group-active:scale-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
+          <!-- Left column -->
+          <div class="space-y-6">
+            <!-- Gateway card -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  Provider Gateway
+                </h2>
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Use your own OpenAI-compatible API gateway with API key and base URL.
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Base URL -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Base URL
+                  </label>
+
+                  <input
+                    v-model="settings.baseUrl"
+                    type="url"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="https://your-provider.com/v1"
+                    class="input-field"
+                  />
+                </div>
+
+                <!-- API Key -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    API Key
+                  </label>
+
+                  <div class="relative">
+                    <input
+                      v-model="settings.apiKey"
+                      :type="showKey ? 'text' : 'password'"
+                      spellcheck="false"
+                      autocomplete="off"
+                      placeholder="Enter your gateway API key"
+                      class="input-field pr-24"
+                    />
+
+                    <button
+                      type="button"
+                      @click="showKey = !showKey"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:bg-white/[0.08] hover:text-white"
+                    >
+                      {{ showKey ? "Hide" : "Show" }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Models & Voice card -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  Models & Voice
+                </h2>
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Configure your AI models and the default voice for text-to-speech.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- STT Model -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Voice to Text Model
+                  </label>
+
+                  <input
+                    v-model="settings.sttModel"
+                    type="text"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="scribe_v2, whisper, ..."
+                    class="input-field"
+                  />
+                </div>
+
+                <!-- LLM Model -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    LLM Model
+                  </label>
+
+                  <input
+                    v-model="settings.llmModel"
+                    type="text"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="gpt-4o-mini, gemini-flash, ..."
+                    class="input-field"
+                  />
+                </div>
+
+                <!-- TTS Model -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Text to Voice Model
+                  </label>
+
+                  <input
+                    v-model="settings.ttsModel"
+                    type="text"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="gemini-tts, tts-1, ..."
+                    class="input-field"
+                  />
+                </div>
+
+                <!-- TTS Voice -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Voice ID
+                  </label>
+
+                  <input
+                    v-model="settings.ttsVoice"
+                    type="text"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="zephyr, alloy, echo..."
+                    class="input-field"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Shortcuts card -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  Shortcuts
+                </h2>
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Click a shortcut field, then press your desired key combination.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- STT Shortcut -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Voice to Text (STT)
+                  </label>
+
+                  <button
+                    type="button"
+                    @click="startShortcutCapture('sttShortcut')"
+                    @keydown="handleShortcutKeydown"
+                    @blur="cancelShortcutCapture"
+                    class="shortcut-capture-field"
+                    :class="capturingShortcut === 'sttShortcut' ? 'shortcut-capture-field-active' : ''"
+                  >
+                    <span v-if="capturingShortcut === 'sttShortcut'" class="text-blue-300">
+                      Press shortcut...
+                    </span>
+
+                    <span v-else class="flex flex-wrap items-center justify-center gap-1.5">
+                      <kbd
+                        v-for="key in formatShortcutKeys(settings.sttShortcut)"
+                        :key="`stt-${key}`"
+                        class="shortcut-key"
+                      >
+                        {{ key }}
+                      </kbd>
+                    </span>
+                  </button>
+                </div>
+
+                <!-- TTS Shortcut -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Text to Voice (TTS)
+                  </label>
+
+                  <button
+                    type="button"
+                    @click="startShortcutCapture('ttsShortcut')"
+                    @keydown="handleShortcutKeydown"
+                    @blur="cancelShortcutCapture"
+                    class="shortcut-capture-field"
+                    :class="capturingShortcut === 'ttsShortcut' ? 'shortcut-capture-field-active' : ''"
+                  >
+                    <span v-if="capturingShortcut === 'ttsShortcut'" class="text-blue-300">
+                      Press shortcut...
+                    </span>
+
+                    <span v-else class="flex flex-wrap items-center justify-center gap-1.5">
+                      <kbd
+                        v-for="key in formatShortcutKeys(settings.ttsShortcut)"
+                        :key="`tts-${key}`"
+                        class="shortcut-key"
+                      >
+                        {{ key }}
+                      </kbd>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <p class="mt-4 text-xs leading-5 text-zinc-500">
+                Recommended format: Control+Alt+S, Control+Shift+1, CommandOrControl+Alt+Space.
+              </p>
+            </div>
+
+            <!-- LLM control and prompts -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  LLM & Prompts
+                </h2>
+
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Enable or disable language model processing and customize how EchoKey corrects, rewrites, or translates text.
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Enable LLM -->
+                <SettingToggle
+                  title="Enable language model"
+                  description="Use the LLM for correction, tone adjustment, cleanup, and translation."
+                  :enabled="settings.enableLlm"
+                  @toggle="settings.enableLlm = !settings.enableLlm"
+                />
+
+                <!-- Main LLM prompt -->
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Correction & Tone Prompt
+                  </label>
+
+                  <textarea
+                    v-model="settings.llmPrompt"
+                    rows="6"
+                    spellcheck="false"
+                    placeholder="Tell the language model what to fix, how to rewrite, and what tone to use..."
+                    class="min-h-36 w-full resize-y rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-blue-400/40 focus:bg-black/30"
+                  ></textarea>
+
+                  <p class="mt-2 text-xs leading-5 text-zinc-500">
+                    This prompt is used when EchoKey cleans or rewrites transcribed text with the LLM.
+                  </p>
+                </div>
+
+                <!-- Translation prompt -->
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Translation Prompt
+                  </label>
+
+                  <textarea
+                    v-model="settings.translationPrompt"
+                    rows="5"
+                    spellcheck="false"
+                    placeholder="Tell the language model how to translate the text..."
+                    class="min-h-32 w-full resize-y rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-blue-400/40 focus:bg-black/30"
+                  ></textarea>
+
+                  <p class="mt-2 text-xs leading-5 text-zinc-500">
+                    This prompt is used when EchoKey translates STT or TTS output using the LLM.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Output languages -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  Output Languages
+                </h2>
+
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Choose the output language for voice-to-text and text-to-voice workflows.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- STT output language -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Voice to Text Output Language
+                  </label>
+
+                  <div class="relative">
+                    <select v-model="settings.sttOutputLanguage" class="select-field">
+                      <option class="bg-zinc-950 text-white" value="auto">Auto Detect</option>
+                      <option class="bg-zinc-950 text-white" value="fa">Persian</option>
+                      <option class="bg-zinc-950 text-white" value="en">English</option>
+                      <option class="bg-zinc-950 text-white" value="ar">Arabic</option>
+                      <option class="bg-zinc-950 text-white" value="tr">Turkish</option>
+                      <option class="bg-zinc-950 text-white" value="de">German</option>
+                      <option class="bg-zinc-950 text-white" value="fr">French</option>
+                      <option class="bg-zinc-950 text-white" value="es">Spanish</option>
+                    </select>
+
+                    <SelectArrow />
+                  </div>
+
+                  <p class="mt-2 text-xs leading-5 text-zinc-500">
+                    Used for Voice to Text output. If translation is enabled, the LLM translates to this language.
+                  </p>
+                </div>
+
+                <!-- TTS output language -->
+                <div>
+                  <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Text to Voice Output Language
+                  </label>
+
+                  <div class="relative">
+                    <select v-model="settings.ttsOutputLanguage" class="select-field">
+                      <option class="bg-zinc-950 text-white" value="auto">Auto Detect</option>
+                      <option class="bg-zinc-950 text-white" value="fa">Persian</option>
+                      <option class="bg-zinc-950 text-white" value="en">English</option>
+                      <option class="bg-zinc-950 text-white" value="ar">Arabic</option>
+                      <option class="bg-zinc-950 text-white" value="tr">Turkish</option>
+                      <option class="bg-zinc-950 text-white" value="de">German</option>
+                      <option class="bg-zinc-950 text-white" value="fr">French</option>
+                      <option class="bg-zinc-950 text-white" value="es">Spanish</option>
+                    </select>
+
+                    <SelectArrow />
+                  </div>
+
+                  <p class="mt-2 text-xs leading-5 text-zinc-500">
+                    Used before Text to Voice. If translation is enabled, selected text is translated to this language before speech generation.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI processing features -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div class="mb-5">
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  AI Processing
+                </h2>
+                <p class="mt-2 text-sm leading-6 text-zinc-500">
+                  Use the LLM model to clean, correct, and translate content before output.
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                <!-- STT correction -->
+                <SettingToggle
+                  title="Clean transcribed text with LLM"
+                  description="Remove filler words like 'um', 'uh', repeated words, and fix messy speech before paste."
+                  :enabled="settings.correctSttWithLlm"
+                  @toggle="settings.correctSttWithLlm = !settings.correctSttWithLlm"
+                />
+
+                <!-- TTS translation -->
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-white">
+                        Translate text before Text to Voice
+                      </p>
+                      <p class="mt-1 text-xs leading-5 text-zinc-500">
+                        Use the LLM to translate selected text to the Text to Voice output language, then generate voice.
+                      </p>
+                    </div>
+
+                    <ToggleSwitch
+                      :enabled="settings.translateBeforeTts"
+                      @toggle="settings.translateBeforeTts = !settings.translateBeforeTts"
+                    />
+                  </div>
+                </div>
+
+                <!-- STT translation -->
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-white">
+                        Translate Voice to Text output
+                      </p>
+                      <p class="mt-1 text-xs leading-5 text-zinc-500">
+                        Convert speech to text first, then use the LLM to translate it to the Voice to Text output language.
+                      </p>
+                    </div>
+
+                    <ToggleSwitch
+                      :enabled="settings.translateAfterStt"
+                      @toggle="settings.translateAfterStt = !settings.translateAfterStt"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <aside class="space-y-6">
+            <!-- Compatibility card -->
+            <div class="rounded-3xl border border-blue-400/15 bg-blue-500/10 p-5">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-400/15 text-blue-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.5 6.5h11v11h-11z" />
+                </svg>
+              </div>
+
+              <h3 class="mt-4 text-sm font-semibold text-white">
+                LangChain compatible
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-zinc-400">
+                Works with LangChain if your gateway supports OpenAI-compatible chat completions.
+              </p>
+
+              <div class="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3 font-mono text-[11px] leading-5 text-zinc-500">
+                baseURL: {{ settings.baseUrl || "not set" }}<br />
+                sttModel: {{ settings.sttModel || "not set" }}<br />
+                ttsModel: {{ settings.ttsModel || "not set" }}<br />
+                llmModel: {{ settings.llmModel || "not set" }}
+              </div>
+            </div>
+
+            <!-- Feature summary -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <h3 class="text-sm font-semibold text-white">
+                Enabled features
+              </h3>
+
+              <div class="mt-4 space-y-3">
+                <FeatureStatus label="Language model" :enabled="settings.enableLlm" />
+                <FeatureStatus label="LLM correction" :enabled="settings.correctSttWithLlm && settings.enableLlm" />
+                <FeatureStatus label="TTS translation" :enabled="settings.translateBeforeTts && settings.enableLlm" />
+                <FeatureStatus label="STT translation" :enabled="settings.translateAfterStt && settings.enableLlm" />
+              </div>
+            </div>
+
+            <!-- Language summary -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <h3 class="text-sm font-semibold text-white">
+                Output summary
+              </h3>
+
+              <div class="mt-4 space-y-3 text-sm">
+                <div class="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                  <span class="text-zinc-400">Voice to Text</span>
+                  <span class="font-mono text-xs text-zinc-300">{{ settings.sttOutputLanguage || "auto" }}</span>
+                </div>
+
+                <div class="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                  <span class="text-zinc-400">Text to Voice</span>
+                  <span class="font-mono text-xs text-zinc-300">{{ settings.ttsOutputLanguage || "auto" }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage card -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <h3 class="text-sm font-semibold text-white">
+                Local-first storage
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-zinc-500">
+                Settings are stored locally on this device. EchoKey itself does not need a backend server.
+              </p>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-zinc-500">BYOK</span>
+                <span class="rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-zinc-500">Base URL</span>
+                <span class="rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-zinc-500">OpenAI-compatible</span>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="rounded-3xl border border-white/10 bg-black/20 p-5">
+              <div v-if="saveStatus === 'success'" class="flex items-center gap-2 text-sm font-medium text-emerald-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.81a.75.75 0 0 0-1.214-.88l-3.236 4.46-1.79-1.79a.75.75 0 1 0-1.06 1.061l2.407 2.407a.75.75 0 0 0 1.137-.089l3.756-5.17Z" clip-rule="evenodd" />
+                </svg>
+                Settings saved successfully
+              </div>
+
+              <div v-else-if="saveStatus === 'error'" class="flex items-center gap-2 text-sm font-medium text-red-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.485 2.495a1.75 1.75 0 0 1 3.03 0l6.28 10.875A1.75 1.75 0 0 1 16.28 16H3.72a1.75 1.75 0 0 1-1.515-2.63L8.485 2.495ZM10 6a.75.75 0 0 0-.75.75v3.5a.75.75 0 0 0 1.5 0v-3.5A.75.75 0 0 0 10 6Zm0 7.25a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clip-rule="evenodd" />
+                </svg>
+                Base URL, API key, and all models are required
+              </div>
+
+              <div v-else class="text-sm text-zinc-500">
+                Configure your gateway and save changes.
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex shrink-0 items-center justify-between border-t border-white/10 px-7 py-5">
+        <button
+          type="button"
+          @click="resetConfiguration"
+          class="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.08] hover:text-white"
+        >
+          Reset
+        </button>
+
+        <button
+          type="button"
+          @click="saveConfiguration"
+          :disabled="isSaving"
+          class="inline-flex min-w-40 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black shadow-xl shadow-white/10 transition hover:bg-zinc-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <svg
+            v-if="isSaving"
+            class="h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>
+          </svg>
+
+          <span>{{ isSaving ? "Saving" : "Save changes" }}</span>
+        </button>
+      </div>
+    </section>
+  </main>
+</div>
